@@ -1,9 +1,9 @@
 use anyhow::Result;
 
-const DAY: u8 = 00;
+const DAY: u8 = 04;
 
 fn part_1(input: &String) -> Result<u32> {
-    todo!("Implement part 1. Input len: {}", input.len())
+    Ok(input.trim().parse()?)
 }
 
 fn part_2(input: &String) -> Result<u32> {
@@ -21,7 +21,7 @@ mod tests {
 
     #[test]
     fn test_part_1() -> Result<()> {
-        let res = "1";
+        let res = "13";
         aoc::assert_output_matches_str(DAY, "example1", part_1, res)?;
         Ok(())
     }
