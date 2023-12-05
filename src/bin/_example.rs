@@ -2,12 +2,13 @@ use anyhow::Result;
 
 const DAY: u8 = 00;
 
-fn part_1(input: &String) -> Result<u32> {
-    todo!("Implement part 1. Input len: {}", input.len())
+fn part_1(input: &str) -> Result<u32> {
+    Ok(input.trim().parse()?)
 }
 
-fn part_2(input: &String) -> Result<u32> {
-    todo!("Implement part 2. Input len: {}", input.len())
+fn part_2(input: &str) -> Result<u32> {
+    Ok(input.trim().parse()?)
+    // todo!("Implement part 2. Input len: {}", input.len())
 }
 
 fn main() -> Result<()> {

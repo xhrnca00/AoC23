@@ -2,7 +2,7 @@ use anyhow::Result;
 
 const DAY: u8 = 01;
 
-fn part_1(input: &String) -> Result<u32> {
+fn part_1(input: &str) -> Result<u32> {
     Ok(input
         .lines()
         .map(|l| {
@@ -16,7 +16,7 @@ fn part_1(input: &String) -> Result<u32> {
         .sum())
 }
 
-fn part_2(input: &String) -> Result<u32> {
+fn part_2(input: &str) -> Result<u32> {
     let lookup = [
         "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
     ];

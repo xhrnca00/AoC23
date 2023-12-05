@@ -5,7 +5,7 @@ use itertools::{any, izip, Itertools};
 
 const DAY: u8 = 03;
 
-fn part_1(input: &String) -> Result<u32> {
+fn part_1(input: &str) -> Result<u32> {
     let line_len = input.lines().next().unwrap().len();
     let blank_line = ".".repeat(line_len);
     // Add blank lines to the top and bottom of the input
@@ -63,7 +63,7 @@ fn read_digit_mr(table: &[u8], mut i: usize, w: usize) -> Range<usize> {
     start..i
 }
 
-fn part_2(input: &String) -> Result<u32> {
+fn part_2(input: &str) -> Result<u32> {
     let mut sum = 0;
     let w = input.lines().next().unwrap().len();
     let h = input.lines().count();

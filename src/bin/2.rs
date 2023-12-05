@@ -8,7 +8,7 @@ type Colors = [u8; 3];
 // sorted
 const COLOR_LABELS: [&str; 3] = ["blue", "green", "red"];
 
-fn part_1(input: &String) -> Result<u32> {
+fn part_1(input: &str) -> Result<u32> {
     const MAX: Colors = [14, 13, 12];
 
     let mut sum = 0;
@@ -33,7 +33,7 @@ fn part_1(input: &String) -> Result<u32> {
     Ok(sum)
 }
 
-fn part_2(input: &String) -> Result<u32> {
+fn part_2(input: &str) -> Result<u32> {
     let mut sum = 0;
     for l in input.lines() {
         let turns = l.split(": ").last().unwrap();
