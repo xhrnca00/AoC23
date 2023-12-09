@@ -13,20 +13,20 @@ pub fn solve_all<T1: Display, T2: Display>(
     part_1: fn(&str) -> Result<T1>,
     part_2: fn(&str) -> Result<T2>,
 ) -> Result<()> {
-    let start = std::time::Instant::now();
     let output_file = File::create(get_output_path(task_num, None)?)?;
     let mut writer = BufWriter::new(output_file);
     let mut input_file = File::open(get_input_path(task_num, None)?)?;
     let mut input = String::new();
     input_file.read_to_string(&mut input)?;
+    let start = std::time::Instant::now();
     let res1 = part_1(&input)?;
     write!(writer, "{res1}\n")?;
     eprintln!("Part 1: {res1}");
     let res2 = part_2(&input)?;
     write!(writer, "{res2}\n")?;
     eprintln!("Part 2: {res2}");
-    writer.flush()?;
     eprintln!("Finished in {:?}!", start.elapsed());
+    writer.flush()?;
     Ok(())
 }
 
