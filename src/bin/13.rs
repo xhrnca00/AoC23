@@ -6,6 +6,7 @@ const DAY: u8 = 13;
 /// (y, x)
 type Vec2 = (usize, usize);
 
+/// get_coord((search_dir, find_dir)) -> index
 fn find_pattern(
     block: &[u8],
     dim: Vec2,
