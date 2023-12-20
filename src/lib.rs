@@ -13,10 +13,10 @@ pub fn solve_all<T1: Display, T2: Display>(
     input_file.read_to_string(&mut input)?;
     let start = std::time::Instant::now();
     let res1 = part_1(&input)?;
-    let res2 = part_2(&input)?;
-    let elapsed = start.elapsed();
     eprintln!("Part 1: {res1}");
+    let res2 = part_2(&input)?;
     eprintln!("Part 2: {res2}");
+    let elapsed = start.elapsed();
     eprintln!("Finished in {:?}!", elapsed);
     Ok(())
 }
