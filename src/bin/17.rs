@@ -19,12 +19,19 @@ enum Direction {
 }
 
 impl Direction {
-    fn opposite(&self) -> Self {
+    fn rev(&self) -> Self {
         match self {
             Direction::North => Direction::South,
             Direction::South => Direction::North,
             Direction::East => Direction::West,
             Direction::West => Direction::East,
+        }
+    }
+
+    fn perp(&self) -> [Self; 2] {
+        match self {
+            Direction::North | Direction::South => [Direction::East, Direction::West],
+            Direction::East | Direction::West => [Direction::North, Direction::South],
         }
     }
 }
@@ -33,18 +40,19 @@ fn get_idx(pos: Vec2, dim: Vec2) -> usize {
     pos.0 * dim.1 + pos.1
 }
 
-fn get_next_pos(pos: Vec2, dim: Vec2, dir: Direction) -> Option<Vec2> {
+fn get_next_pos(pos: Vec2, dim: Vec2, dir: Direction, amount: usize) -> Option<Vec2> {
     match dir {
-        Direction::North if pos.0 > 0 => Some((pos.0 - 1, pos.1)),
-        Direction::South if pos.0 < dim.0 - 1 => Some((pos.0 + 1, pos.1)),
-        Direction::East if pos.1 < dim.1 - 1 => Some((pos.0, pos.1 + 1)),
-        Direction::West if pos.1 > 0 => Some((pos.0, pos.1 - 1)),
+        Direction::North if pos.0 >= amount => Some((pos.0 - amount, pos.1)),
+        Direction::South if pos.0 < dim.0 - amount => Some((pos.0 + amount, pos.1)),
+        Direction::East if pos.1 < dim.1 - amount => Some((pos.0, pos.1 + amount)),
+        Direction::West if pos.1 >= amount => Some((pos.0, pos.1 - amount)),
         _ => None,
     }
 }
 
 fn part_1(input: &str) -> Result<u32> {
-    const MAX_LEN: u8 = 3;
+    const LEN_START: usize = 1;
+    const LEN_END: usize = 3;
     let dim = (input.lines().count(), input.lines().next().unwrap().len());
     let table = input
         .lines()
@@ -52,52 +60,80 @@ fn part_1(input: &str) -> Result<u32> {
         .map(|b| b - b'0')
         .collect_vec();
     let mut pq = BinaryHeap::new();
-    let mut visited = BTreeSet::new();
-    pq.push(Reverse((0, (0, 0), Direction::North, 0)));
-    while let Some(Reverse((heat, pos, dir, len))) = pq.pop() {
-        if visited.get(&(pos, dir, len)).is_some() {
+    let mut visited = HashSet::new();
+    pq.push(Reverse((0, (0, 0), Direction::North)));
+    while let Some(Reverse((heat, pos, dir))) = pq.pop() {
+        if visited.get(&(pos, dir)).is_some() || visited.get(&(pos, dir.rev())).is_some() {
             continue;
         }
-        visited.insert((pos, dir, len));
+        visited.insert((pos, dir));
         if pos == (dim.0 - 1, dim.1 - 1) {
             return Ok(heat);
         }
-        for next_dir in [
-            Direction::North,
-            Direction::South,
-            Direction::East,
-            Direction::West,
-        ] {
-            if next_dir == dir.opposite() {
-                continue;
+        for next_dir in dir.perp() {
+            let mut next_heat = heat;
+            for i in 1..=LEN_END {
+                let next_pos;
+                if let Some(np) = get_next_pos(pos, dim, next_dir, i) {
+                    next_pos = np;
+                } else {
+                    break;
+                }
+                next_heat += table[get_idx(next_pos, dim)] as u32;
+                if i < LEN_START {
+                    continue;
+                }
+                // if visited.get(&(next_pos, next_dir)).is_some() {
+                //     continue;
+                // }
+                pq.push(Reverse((next_heat, next_pos, next_dir)));
             }
-            let next_pos = get_next_pos(pos, dim, next_dir);
-            if next_pos.is_none() {
-                continue;
-            }
-            let next_pos = next_pos.unwrap();
-            let next_heat = heat + table[get_idx(next_pos, dim)] as u32;
-            if next_dir == dir && len == MAX_LEN {
-                continue;
-            }
-            let next_ins;
-            if dir == next_dir {
-                next_ins = (next_heat, next_pos, next_dir, len + 1);
-            } else {
-                next_ins = (next_heat, next_pos, next_dir, 1);
-            }
-            if visited.get(&(next_ins.1, next_ins.2, next_ins.3)).is_some() {
-                continue;
-            }
-            // visited.insert((next_ins.1, next_ins.2, next_ins.3));
-            pq.push(Reverse(next_ins));
         }
     }
     anyhow::bail!("Did not find a path");
 }
 
 fn part_2(input: &str) -> Result<u32> {
-    todo!("Implement part 2. Input len: {}", input.len())
+    const LEN_START: usize = 4;
+    const LEN_END: usize = 10;
+    let dim = (input.lines().count(), input.lines().next().unwrap().len());
+    let table = input
+        .lines()
+        .flat_map(str::bytes)
+        .map(|b| b - b'0')
+        .collect_vec();
+    let mut pq = BinaryHeap::new();
+    let mut visited = HashSet::new();
+    pq.push(Reverse((0, (0, 0), Direction::North)));
+    while let Some(Reverse((heat, pos, dir))) = pq.pop() {
+        if visited.get(&(pos, dir)).is_some() || visited.get(&(pos, dir.rev())).is_some() {
+            continue;
+        }
+        visited.insert((pos, dir));
+        if pos == (dim.0 - 1, dim.1 - 1) {
+            return Ok(heat);
+        }
+        for next_dir in dir.perp() {
+            let mut next_heat = heat;
+            for i in 1..=LEN_END {
+                let next_pos;
+                if let Some(np) = get_next_pos(pos, dim, next_dir, i) {
+                    next_pos = np;
+                } else {
+                    break;
+                }
+                next_heat += table[get_idx(next_pos, dim)] as u32;
+                if i < LEN_START {
+                    continue;
+                }
+                // if visited.get(&(next_pos, next_dir)).is_some() {
+                //     continue;
+                // }
+                pq.push(Reverse((next_heat, next_pos, next_dir)));
+            }
+        }
+    }
+    anyhow::bail!("Did not find a path");
 }
 
 fn main() -> Result<()> {
@@ -118,7 +154,7 @@ mod tests {
 
     #[test]
     fn test_part_2() -> Result<()> {
-        let res = "2";
+        let res = "94";
         aoc::assert_output_matches_str(DAY, "example2", part_2, res)?;
         Ok(())
     }
