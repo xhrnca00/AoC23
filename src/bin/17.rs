@@ -1,6 +1,6 @@
 use std::{
     cmp::Reverse,
-    collections::{BTreeSet, BinaryHeap, HashSet},
+    collections::{BinaryHeap, HashSet},
 };
 
 use anyhow::Result;
@@ -12,10 +12,10 @@ type Vec2 = (usize, usize);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 enum Direction {
-    North,
     South,
-    East,
     West,
+    East,
+    North,
 }
 
 impl Direction {
@@ -61,8 +61,9 @@ fn part_1(input: &str) -> Result<u32> {
         .collect_vec();
     let mut pq = BinaryHeap::new();
     let mut visited = HashSet::new();
-    pq.push(Reverse((0, (0, 0), Direction::North)));
-    while let Some(Reverse((heat, pos, dir))) = pq.pop() {
+    pq.push(Reverse((0, Direction::North, (0, 0))));
+    visited.insert(((0, 0), Direction::East));
+    while let Some(Reverse((heat, dir, pos))) = pq.pop() {
         if visited.get(&(pos, dir)).is_some() || visited.get(&(pos, dir.rev())).is_some() {
             continue;
         }
@@ -83,10 +84,7 @@ fn part_1(input: &str) -> Result<u32> {
                 if i < LEN_START {
                     continue;
                 }
-                // if visited.get(&(next_pos, next_dir)).is_some() {
-                //     continue;
-                // }
-                pq.push(Reverse((next_heat, next_pos, next_dir)));
+                pq.push(Reverse((next_heat, next_dir, next_pos)));
             }
         }
     }
@@ -104,6 +102,7 @@ fn part_2(input: &str) -> Result<u32> {
         .collect_vec();
     let mut pq = BinaryHeap::new();
     let mut visited = HashSet::new();
+    visited.insert(((0, 0), Direction::East));
     pq.push(Reverse((0, (0, 0), Direction::North)));
     while let Some(Reverse((heat, pos, dir))) = pq.pop() {
         if visited.get(&(pos, dir)).is_some() || visited.get(&(pos, dir.rev())).is_some() {
@@ -126,9 +125,6 @@ fn part_2(input: &str) -> Result<u32> {
                 if i < LEN_START {
                     continue;
                 }
-                // if visited.get(&(next_pos, next_dir)).is_some() {
-                //     continue;
-                // }
                 pq.push(Reverse((next_heat, next_pos, next_dir)));
             }
         }
